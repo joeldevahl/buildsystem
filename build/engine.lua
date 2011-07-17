@@ -107,7 +107,7 @@ function Build()
 
 	for _,t in pairs(target_names) do
 		target = engine.targets[t]
-		target.settings = settings
+		target.settings = settings:Copy()
 		for _,hook in pairs(target.hooks) do
 			hook:Execute()
 		end
