@@ -11,17 +11,17 @@ AddConfig("release", "configs/release.lua")
 if engine.host.family == "unix" then
 	if engine.host.platform == "linux" then
 		if engine.host.has32bit.value then
-			AddTarget("linux32", "targets/linux_x86.lua")
+			AddTarget("linux_x86", "targets/linux_x86.lua")
 		end
 		if engine.host.has64bit.value then
-			AddTarget("linux64", "targets/linux_x86_64.lua")
+			AddTarget("linux_x86_64", "targets/linux_x86_64.lua")
 		end
 	elseif engine.host.platform == "macosx" then
 		if engine.host.has32bit.value then
-			AddTarget("osx32", "targets/osx_x86.lua")
+			AddTarget("osx_x86", "targets/osx_x86.lua")
 		end
 		if engine.host.has64bit.value then
-			AddTarget("osx64", "targets/osx_x86_64.lua")
+			AddTarget("osx_x86_64", "targets/osx_x86_64.lua")
 		end
 	end
 elseif engine.host.family == "windows" then
