@@ -1,4 +1,7 @@
 function Using(self, other_unit)
+	if engine.units[other_unit] == nil then
+		AddUnitByName(other_unit)
+	end
 	table.insert(self.using_table, other_unit)
 end
 function UsingHeaders(self, other_unit)

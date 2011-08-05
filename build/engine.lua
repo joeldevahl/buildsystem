@@ -6,6 +6,7 @@ end
 engine.targets = {}
 engine.configs = {}
 engine.units = {}
+engine.unitdirs = {}
 
 Import(PathJoin(engine.path, "build/host.lua"))
 engine.host = NewHost()
@@ -19,18 +20,33 @@ Import(PathJoin(engine.path, "build/unit.lua"))
 Import(PathJoin(engine.path, "build/config.lua"))
 Import(PathJoin(engine.path, "build/target.lua"))
 
-function AddUnit(name, path)
+function AddUnitDir(path)
+	table.insert(engine.unitdirs, path)
+end
+
+function AddUnitByName(name)
+	for _,path in pairs(engine.unitdirs) do
+		local p = PathJoin(path, name)
+		if Exist(PathJoin(p, "build.lua")) then
+			AddUnitByPath(name, p)
+			break
+		end
+	end
+end
+
+function AddUnitByPath(name, path)
+	local old_unit = Unit
 	local unit = NewUnit(path)
 	Unit = unit
 	Import(PathJoin(unit.path, "build.lua"))
-	Unit = nil
 	engine.units[name] = unit
+	Unit = old_unit
 end
 
 function AddUnitsInDir(path)
 	for _,path in pairs(CollectDirs(path .. "/")) do
 		if Exist(PathJoin(path, "build.lua")) then
-			AddUnit(PathFilename(path), path)
+			AddUnitByPath(PathFilename(path), path)
 		end
 	end
 end
@@ -50,8 +66,6 @@ function IntermediateOutput(settings, input)
 end
 
 function Init()
-	AddUnitsInDir(PathJoin(engine.path, "units"))
-	AddUnitsInDir(PathJoin(engine.path, "externals"))
 end
 
 function table.contains(table, element)
