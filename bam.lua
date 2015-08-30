@@ -29,6 +29,11 @@ elseif engine.host.family == "windows" then
 	AddTarget("winx64", "targets/winx64.lua")
 end
 
+AddStep("init", "steps/init.lua")
+AddStep("addtools", "steps/addtools.lua")
+AddStep("patch", "steps/patch.lua")
+AddStep("build", "steps/build.lua")
+
 if not ModuleFilename() then
 	Init()
 	Build()
