@@ -31,8 +31,21 @@ turn make the unit named by depname patch the settings passed to the depending u
 A config/target combination tells the build system how to build the units. Please see files in
 configs/*.lua and targets/*.lua on examples for how this can be done.
 
-The default behaviour is to build all targets for all configs. This can be changed by appending
-"target=<targetname>" and/or "config=configname" without quotes on the commandline.
+The default behaviour is to build all targets for all configs. This can be changed by adding
+"<targetname>", "<configname>" or "<targetname>_<configname>" without quotes on the commandline.
+
+    BUILD STEPS
+
+The system consists of a series of build steps perfromed in order. A base set of these are added
+in the "steps/" directory and can be seen as an example on how to ad new passes. You could for
+example do a step that goes through all units and build unit tests for everything in each units
+"test/" directory, and add execution of them as build targets.
+
+Built in steps are:
+ * Init - Sets up base unit state
+ * Patch - Manages unit dependency and loading, as well as setting up settings for dependencies
+ * Add tools - Allows units to declare new compilers to be used dutring the run.
+ * Build - Builds all imported units per target (BuildTarget) and per target/config combo (Build)
 
     USING THIS BUILDSYSTEM
 
