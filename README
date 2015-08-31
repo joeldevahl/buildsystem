@@ -1,58 +1,64 @@
     ABOUT
 
 A small unit based buildsystem built on top of bam (http://matricks.github.com/bam/).
-I wrote this buildsystem because of problems of duplicated code between by small hobby projects,
-and while it solves this problem for me, it might not suit everybody. Feel free to integrate
-ideas into your own system, bam based or not.
+I wrote this buildsystem because of problems of duplicated code between by small hobby
+projects, and while it solves this problem for me, it might not suit everybody. Feel
+free to integrate ideas into your own system, bam based or not.
 
     BAM INTRO
 
-Bam is at its core a graph walker. Nodes are added by calling AddJob(outfile, info_txt, command)
-and then linked together by AddDependency(outfile, infile). Bam then provides some utilities on
-top of this, like Compile, Link, Library and automatic depchecking for C, C++ and Objective-C.
-When ececuted, bam will check for bam.lua in the current directory and then execute.
+Bam is at its core a graph walker. Nodes are added by calling AddJob(outfile, info_txt,
+command) and then linked together by AddDependency(outfile, infile). Bam then provides
+some utilities on top of this, like Compile, Link, Library and automatic depchecking
+for C, C++ and Objective-C. When ececuted, bam will check for bam.lua in the current
+directory and then execute.
 
     UNITS
 
-I have decided to split my code into units. A unit is, for me, a self contained library and/or
-executable. This buildsystem handles units as a directory containing a file called build.lua. If
-This file is present the file will be included and the unit will be added to the unit list.
+I have decided to split my code into units. A unit is, for me, a self contained library
+and/or executable. This buildsystem handles units as a directory containing a file
+called build.lua. If This file is present the file will be included and the unit will
+be added to the unit list.
 
-A unit is a lua table with function that can be overriden. By default, the functions will look
-for C, C++ and Obj-C files in <unitdir>/src and include files in <unitdir>/include and build a
-static library. This can be changed by overriding the functions Unit.Init and Unit.Build.
-Patching can also be overridden by replacing Unit.Patch and Unit.PatchHeaders
+A unit is a lua table with function that can be overriden. By default, the functions will
+look for C, C++ and Obj-C files in <unitdir>/src and include files in <unitdir>/include
+and build a static library. This can be changed by overriding the functions Unit.Init and
+Unit.Build. Patching can also be overridden by replacing Unit.Patch and Unit.PatchHeaders
 
-A unit can also depend on other units, usually by calling Unit:Using(depname), which will in
-turn make the unit named by depname patch the settings passed to the depending unit.
+A unit can also depend on other units, usually by calling Unit:Using(depname), which will
+in turn make the unit named by depname patch the settings passed to the depending unit.
 
     CONFIGS AND TARGETS
 
-A config/target combination tells the build system how to build the units. Please see files in
-configs/*.lua and targets/*.lua on examples for how this can be done.
+A config/target combination tells the build system how to build the units. Please see
+files in configs/*.lua and targets/*.lua on examples for how this can be done.
 
-The default behaviour is to build all targets for all configs. This can be changed by adding
-"<targetname>", "<configname>" or "<targetname>_<configname>" without quotes on the commandline.
+The default behaviour is to build all targets for all configs. This can be changed by
+adding "<targetname>", "<configname>" or "<targetname>_<configname>" without quotes on
+the commandline.
 
     BUILD STEPS
 
-The system consists of a series of build steps perfromed in order. A base set of these are added
-in the "steps/" directory and can be seen as an example on how to ad new passes. You could for
-example do a step that goes through all units and build unit tests for everything in each units
-"test/" directory, and add execution of them as build targets.
+The system consists of a series of build steps performed in order. A base set of these
+are added in the "steps/" directory and can be seen as an example on how to ad new
+passes. You could for example do a step that goes through all units and build unit
+tests for everything in each units "test/" directory, and add execution of them as
+build targets.
 
 Built in steps are:
- * Init - Sets up base unit state
- * Patch - Manages unit dependency and loading, as well as setting up settings for dependencies
+ * Init      - Sets up base unit state
+ * Patch     - Manages unit dependency and loading, as well as setting up settings for
+               dependencies
  * Add tools - Allows units to declare new compilers to be used dutring the run.
- * Build - Builds all imported units per target (BuildTarget) and per target/config combo (Build)
+ * Build     - Builds all imported units per target (BuildTarget) and per target/config
+               combo (Build)
 
     USING THIS BUILDSYSTEM
 
-Copy the build, config and target directories and bam.lua to your project folder, and modify
-them after need. By default the system will look for units in "units" and "externals".
+Copy the build, config and target directories and bam.lua to your project folder, and
+modify them after need. By default the system will look for units in "units" and
+"externals".
 
     KNOWN BUGS
 
-Windows builds have not been fully tested, 32/64bit distiction might not work there.
 Circular unit dependencies are NOT supported.
