@@ -20,28 +20,86 @@ function table.contains(table, element)
 	return false
 end
 
-function ImprovePatchList(list, sublist)
-	for _,dep in pairs(sublist) do
-		if not table.contains(list, dep) then
-			table.insert(list, 1, dep)
-		end
-	end
-	return list
+function UnitDependencyNameList( unit )
+  local res = {}
+  for _, dep in ipairs( unit.using_table ) do
+    table.insert( res, dep.unit_name )
+  end
+  return res
+end
+
+function FullDependencyMap( unit_name, units )
+  local result = {}
+  local unit = units[unit_name]
+  result[unit_name] = UnitDependencyNameList( unit )
+  for _, sub in pairs( unit.using_table ) do
+    if not table.contains( result, sub ) then
+      local sub_deps = FullDependencyMap( sub.unit_name, units )
+      for k, v in pairs( sub_deps ) do
+        if not table.contains( result, k ) then
+          result[k] = v;
+        end
+      end
+    end
+  end
+  return result
+end
+
+function FindEmptyDeps( dep_map )
+  for k, v in pairs( dep_map ) do
+    if #v == 0 then
+      return k
+    end
+  end
+  return nil
+end
+
+function TableIsEmpty( t )
+  for i, _ in pairs( t ) do
+    return false
+  end
+  return true
+end
+
+function ListRemove( lst, item )
+  for i, v in ipairs( lst ) do
+    if v == item then
+      table.remove( lst, i )
+      return
+    end
+  end
+end
+
+function SolveDeps( dep_map )
+  local list = {}
+  while TableIsEmpty( dep_map ) == false do
+    local run = true
+    while run do
+      local rem = FindEmptyDeps( dep_map )
+      if rem == nil then
+        run = false
+      else
+        table.insert( list, rem )
+        dep_map[rem] = nil
+        for i, v in pairs( dep_map ) do
+          if table.contains( v, rem ) then
+            ListRemove( v, rem )
+          end
+        end
+      end
+    end
+  end
+  return list
 end
 
 function BuildPatchList(unit, units)
-	local list = {}
-	for _,import in pairs(unit.using_table) do
-		local other_unit = units[import.unit_name]
-		local sublist = BuildPatchList(other_unit, units)
-		table.insert(sublist, import.unit_name)
-		list = ImprovePatchList(list, sublist)
-	end
-	--print(unit.name)
-	--for _,c in pairs(list) do
-	--	print("\t" .. c)
-	--end
-	return list
+  local full_dep = FullDependencyMap(unit.name, units)
+  local solved = SolveDeps( full_dep )
+  local list = {}
+  for _, v in ipairs( solved ) do
+    table.insert( list, 1, v )
+  end
+  return list
 end
 
 function PatchUnit(unit, patch_list)
