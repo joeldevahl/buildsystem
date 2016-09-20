@@ -46,7 +46,7 @@ function AddUnitByName(name, restriction)
 	for _,provider in pairs(engine.unitproviders) do
 		if provider.class == "dir" then
 			local p = PathJoin(provider.path, name)
-			if Exist(PathJoin(p, "build.lua")) then
+			if Exist(PathJoin(p, "build.lua")) or Exist(PathJoin(p, name .. ".lua")) then
 				AddUnitByPath(name, p)
 				return
 			end
@@ -69,11 +69,11 @@ function AddUnitByName(name, restriction)
 					if restriction then
 						ExecuteSilent("cd " .. p .. " && git checkout " .. restriction.branch)
 					end
-					if Exist(PathJoin(p, "build.lua")) then
+					if Exist(PathJoin(p, "build.lua")) or Exist(PathJoin(p, name .. ".lua")) then
 						AddUnitByPath(name, p)
 						return
 					else
-						error("synced unit " .. name .. " contains no build.lua")
+						error("synced unit " .. name .. " contains no build.lua or " .. name .. ".lua")
 					end
 				end
 			end
@@ -87,7 +87,11 @@ function AddUnitByPath(name, path)
 	local old_unit = Unit -- should not be needed any more, but who knows
 	local unit = NewUnit(name, path)
 	Unit = unit
-	Import(PathJoin(unit.path, "build.lua"))
+	if Exist(PathJoin(unit.path, "build.lua")) then
+		Import(PathJoin(unit.path, "build.lua"))
+	else
+		Import(PathJoin(unit.path, name .. ".lua"))
+	end
 	engine.units[name] = unit
 	Unit = old_unit
 
@@ -105,7 +109,7 @@ end
 
 function AddUnitsInDir(path)
 	for _,path in pairs(CollectDirs(path .. "/")) do
-		if Exist(PathJoin(path, "build.lua")) then
+		if Exist(PathJoin(p, "build.lua")) or Exist(PathJoin(p, name .. ".lua")) then
 			AddUnitByPath(PathFilename(path), path)
 		end
 	end
@@ -115,6 +119,7 @@ function GetOutputNameWithoutExt(input)
 	local full_file = PathFilename(input)
 	local name = PathBase(full_file)
 	local path = string.gsub(input, full_file, "")
+	path = string.gsub(path, target.outdir, "")
 	if engine.path ~= "" then
 		path = string.gsub(path, engine.path, "")
 	end
