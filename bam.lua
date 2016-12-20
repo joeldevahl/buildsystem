@@ -33,6 +33,7 @@ AddStep("init", "steps/init.lua")
 AddStep("addtools", "steps/addtools.lua")
 AddStep("patch", "steps/patch.lua")
 AddStep("build", "steps/build.lua")
+AddStep("projgen", "steps/projgen.lua")
 
 if not ModuleFilename() then
 	Init()

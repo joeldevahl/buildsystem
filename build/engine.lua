@@ -1,5 +1,6 @@
 engine = {}
-engine.path = string.gsub(ModuleFilename(), "build/engine.lua", "")
+engine.project_name = "default_project_name"
+engine.path = string.gsub(ModuleFilename(), "buildsystem/engine.lua", "")
 engine.targets = {}
 engine.configs = {}
 engine.steps = {}
@@ -7,6 +8,7 @@ engine.units = {}
 engine.unitproviders = {}
 engine.unresolved_units = {}
 engine.sync = false
+engine.projgen = false
 
 engine.host = {}
 engine.host.family = family
@@ -107,10 +109,11 @@ function AddUnitByPath(name, path)
 	end
 end
 
-function AddUnitsInDir(path)
-	for _,path in pairs(CollectDirs(path .. "/")) do
-		if Exist(PathJoin(p, "build.lua")) or Exist(PathJoin(p, name .. ".lua")) then
-			AddUnitByPath(PathFilename(path), path)
+function AddUnitsInDir(dir)
+	for _,path in pairs(CollectDirs(dir .. "/")) do
+		local name = PathFilename(path)
+		if Exist(PathJoin(path, "build.lua")) or Exist(PathJoin(path, name .. ".lua")) then
+			AddUnitByPath(name, path)
 		end
 	end
 end
@@ -119,7 +122,7 @@ function GetOutputNameWithoutExt(input)
 	local full_file = PathFilename(input)
 	local name = PathBase(full_file)
 	local path = string.gsub(input, full_file, "")
-	path = string.gsub(path, target.outdir, "")
+	path = string.gsub(path, target.outdir .. "/", "")
 	if engine.path ~= "" then
 		path = string.gsub(path, engine.path, "")
 	end
@@ -139,6 +142,12 @@ function Init()
 	local sync = ScriptArgs["sync"]
 	if sync and sync == "true" then
 		engine.sync = true
+	end
+
+	local projgen = ScriptArgs["projgen"]
+	print(projgen)
+	if projgen and projgen == "true" then
+		engine.projgen = true
 	end
 
 	for _,step in pairs(engine.steps) do
