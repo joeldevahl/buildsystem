@@ -140,12 +140,12 @@ function Step.Init(self)
 		table.insert(self.dependson_table, import)
 	end
 
-	function DefaultApplyConfig(self, settings)
+	function DefaultApplyConfig(self)
 		for _,hook in pairs(config.hooks) do
 			for _,config_set in pairs(self.config_set) do
 				local cs = hook[config_set]
 				if cs and not table.contains(self.applied_config_set, config_set) then
-					cs(settings)
+					cs(hook, self.settings)
 					table.insert(self.applied_config_set, config_set)
 				end
 			end
@@ -157,7 +157,7 @@ function Step.Init(self)
 	end
 
 	function DefaultPatch(self, other_unit)
-		self:ApplyConfig(other_unit)
+		self:ApplyConfig()
 		self:PatchHeaders(other_unit)
 
 		if self.shared_library or self.static_library then

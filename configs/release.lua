@@ -1,25 +1,25 @@
 ImportConfig("configs/common.lua")
 
-function Config:optimizations(self, settings)
+function Config.optimizations(self, settings)
 	if family == "unix" then
-		config.settings.cc.flags:Add("-O3")
-		config.settings.cc.flags:Add("-fstrict-aliasing")
+		settings.cc.flags:Add("-O3")
+		settings.cc.flags:Add("-fstrict-aliasing")
 	elseif platform == "windows" then
-		config.settings.cc.flags:Add("/Ox") -- Max optimization
+		settings.cc.flags:Add("/Ox") -- Max optimization
 	end
 end
 
-function Config:warnings(self, settings)
+function Config.warnings(self, settings)
 	if family == "unix" then
-		config.settings.cc.flags:Add("-Wall")
-		config.settings.cc.flags:Add("-Werror")
+		settings.cc.flags:Add("-Wall")
+		settings.cc.flags:Add("-Werror")
 	elseif family == "windows" then
-		config.settings.cc.flags:Add("/WX") -- warnings as errors
-		config.settings.cc.flags:Add("/W4") -- Level 4 warning reports
+		settings.cc.flags:Add("/WX") -- warnings as errors
+		settings.cc.flags:Add("/W4") -- Level 4 warning reports
 	end
 end
 
-function Config:Execute(self)
+function Config.Execute(self)
 	config.settings.config_name = "release"
 	config.settings.config_ext = "_r"
 	

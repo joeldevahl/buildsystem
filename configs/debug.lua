@@ -1,35 +1,32 @@
 ImportConfig("configs/common.lua")
 
-function Config:optimizations(self, settings)
+function Config.optimizations(self, settings)
 	if family == "unix" then
-		config.settings.cc.flags:Add("-O0")
-		config.settings.cc.flags:Add("-g")
-		config.settings.cc.flags:Add("-fstrict-aliasing")
+		settings.cc.flags:Add("-O0")
+		settings.cc.flags:Add("-g")
+		settings.cc.flags:Add("-fstrict-aliasing")
 	elseif family == "windows" then
-		config.settings.cc.flags:Add("/sdl") -- SDL checks
-		config.settings.cc.flags:Add("/Od") -- No optimization
-		config.settings.cc.flags:Add("/Oy-") -- Keep frame pointers
-		config.settings.cc.flags:Add("/RTC1") -- Runtime checks
-		config.settings.cc.flags:Add("/GS") -- Secutiry checks
+		settings.cc.flags:Add("/sdl") -- SDL checks
+		settings.cc.flags:Add("/Od") -- No optimization
+		settings.cc.flags:Add("/Oy-") -- Keep frame pointers
+		settings.cc.flags:Add("/RTC1") -- Runtime checks
+		settings.cc.flags:Add("/GS") -- Secutiry checks
 	end
 end
 
-function Config:warnings(self, settings)
+function Config.warnings(self, settings)
 	if family == "unix" then
-		config.settings.cc.flags:Add("-Wall")
-		config.settings.cc.flags:Add("-Werror")
+		settings.cc.flags:Add("-Wall")
+		settings.cc.flags:Add("-Werror")
 	elseif family == "windows" then
-		config.settings.cc.flags:Add("/WX") -- warnings as errors
-		config.settings.cc.flags:Add("/W4") -- Level 4 warning reports
+		settings.cc.flags:Add("/WX") -- warnings as errors
+		settings.cc.flags:Add("/W4") -- Level 4 warning reports
 	end
 end
 
-function Config:Execute(self)
+function Config.Execute(self)
 	config.settings.config_name = "debug"
 	config.settings.config_ext = "_d"
-
-  config.settings.cc.defines:Add('LOG_ENABLE')
-  config.settings.cc.defines:Add('DBG_TOOLS_ASSERT_ENABLE')
 
 	if family == "unix" then
 	  config.settings.cc.flags:Add("-g")
