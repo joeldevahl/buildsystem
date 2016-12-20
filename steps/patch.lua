@@ -144,8 +144,9 @@ function Step.Init(self)
 		for _,hook in pairs(config.hooks) do
 			for _,config_set in pairs(self.config_set) do
 				local cs = hook[config_set]
-				if cs then
-					cs(config, settings)
+				if cs and not table.contains(self.applied_config_set, config_set) then
+					cs(settings)
+					table.insert(self.applied_config_set, config_set)
 				end
 			end
 		end
@@ -165,8 +166,9 @@ function Step.Init(self)
 		end
 	end
 
-	DefaultUnit.default_config_set  = { "optimizations", "warnings" }
-	DefaultUnit.config_set          = {}
+	DefaultUnit.applied_config_set  = {}
+	DefaultUnit.default_config_set  = { "optimizations", "warnings" } -- TODO: figure out how tom make this imutable
+	DefaultUnit.config_set          = DefaultUnit.default_config_set
 	DefaultUnit.restriction         = nil
 	DefaultUnit.using_table         = {}
 	DefaultUnit.Using               = Using
