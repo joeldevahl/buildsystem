@@ -1,7 +1,7 @@
 function GetHostBinary(name)
 	-- TODO: better selection
 	if family == "windows" then
-		return "local\\build\\winx64\\" .. name .."_d.exe"
+		return "local\\build\\winx64\\" .. str_replace(name, "/", "\\") .."_d.exe"
 	elseif platform == "macosx" then
 		return "local/build/osx_x86_64/" .. name .. "_d"
 	elseif platform == "linux" then
