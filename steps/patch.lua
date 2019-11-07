@@ -104,6 +104,7 @@ end
 
 function PatchUnit(unit, patch_list)
 	unit:Patch(unit) -- patch self
+	unit:ApplyConfig() -- apply config to self
 	for _,inc in pairs(patch_list) do
 		local other_unit = engine.units[inc]
 		other_unit:Patch(unit)
@@ -140,17 +141,13 @@ function Step.Init(self)
 		table.insert(self.dependson_table, import)
 	end
 
-	function DefaultApplyConfig(self, other_unit)
+	function DefaultApplyConfig(self)
 		for _,config_set in pairs(self.config_set) do
-			local already_applied = table.contains(other_unit.applied_config_set, config_set)
-			if not already_applied then
-				for _,hook in pairs(config.hooks) do
-					local cs = hook[config_set]
-					if cs then
-						cs(hook, other_unit.settings)
-					end
+			for _,hook in pairs(config.hooks) do
+				local cs = hook[config_set]
+				if cs then
+					cs(hook, self.settings)
 				end
-				table.insert(other_unit.applied_config_set, config_set)
 			end
 		end
 	end
@@ -160,7 +157,6 @@ function Step.Init(self)
 	end
 
 	function DefaultPatch(self, other_unit)
-		self:ApplyConfig(other_unit)
 		self:PatchHeaders(other_unit)
 
 		if self.shared_library or self.static_library then
@@ -169,7 +165,6 @@ function Step.Init(self)
 		end
 	end
 
-	DefaultUnit.applied_config_set  = {}
 	DefaultUnit.default_config_set  = { "optimizations", "warnings" } -- TODO: figure out how tom make this imutable
 	DefaultUnit.config_set          = DefaultUnit.default_config_set
 	DefaultUnit.restriction         = nil
@@ -207,9 +202,6 @@ function Step.PerTarget(self)
 end
 
 function Step.PerConfig(self)
-	for name,unit in pairs(engine.units) do
-	  unit.applied_config_set = {}
-	end
 	for name,unit in pairs(engine.units) do
 		unit.settings = config.settings:Copy()
 		local patch_list = BuildPatchList(unit, engine.units)

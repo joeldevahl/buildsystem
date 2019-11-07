@@ -1,9 +1,7 @@
-if ModuleFilename() then
-	local ep = string.gsub(ModuleFilename(), "bam.lua", "")
-	Import(PathJoin(ep, "build/engine.lua"))
-else
-	Import("build/engine.lua")
-end
+local ep = string.gsub(ModuleFilename(), "bam.lua", "")
+Import(PathJoin(ep, "build/engine.lua"))
+
+engine.project_name = "vriden"
 
 AddConfig("debug", "configs/debug.lua")
 AddConfig("release", "configs/release.lua")
@@ -35,7 +33,10 @@ AddStep("patch", "steps/patch.lua")
 AddStep("build", "steps/build.lua")
 AddStep("projgen", "steps/projgen.lua")
 
-if not ModuleFilename() then
-	Init()
-	Build()
-end
+Init()
+
+AddUnitDir("externals")
+AddUnitDir("units")
+AddUnitsInDir("projects")
+
+Build()

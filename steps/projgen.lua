@@ -68,14 +68,27 @@ function Step.PostBuild(self)
 		prj:write("	<Import Project=\"$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props\" Condition=\"exists('$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props')\" Label=\"LocalAppDataPlatform\" />\n")
 		prj:write("  </ImportGroup>\n")
 		prj:write("  <PropertyGroup Label=\"UserMacros\" />\n")
+
 		prj:write("  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Debug|x64'\">\n")
 		prj:write("	<NMakeBuildCommandLine>bam -v debug</NMakeBuildCommandLine>\n") -- TODO: only build this project?
 		prj:write("	<NMakeCleanCommandLine>bam -c</NMakeCleanCommandLine>\n")
+		prj:write("	<IncludePath>")
+		for _,f in ipairs(unit.settings.cc.includes) do
+			prj:write(f .. ";")
+		end
+		prj:write("$(IncludePath)</IncludePath>\n")
 		prj:write("  </PropertyGroup>\n")
+
 		prj:write("  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Release|x64'\">\n")
 		prj:write("	<NMakeBuildCommandLine>bam -v release</NMakeBuildCommandLine>\n") -- TODO: only build this project
 		prj:write("	<NMakeCleanCommandLine>bam -c</NMakeCleanCommandLine>\n")
+		prj:write("	<IncludePath>")
+		for _,f in ipairs(unit.settings.cc.includes) do
+			prj:write(f .. ";")
+		end
+		prj:write("$(IncludePath)</IncludePath>\n")
 		prj:write("  </PropertyGroup>\n")
+
 		prj:write("  <ItemDefinitionGroup>\n")
 		prj:write("  </ItemDefinitionGroup>\n")
 

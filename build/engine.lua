@@ -1,6 +1,6 @@
 engine = {}
 engine.project_name = "default_project_name"
-engine.path = string.gsub(ModuleFilename(), "buildsystem/engine.lua", "")
+engine.path = string.gsub(ModuleFilename(), "build/engine.lua", "")
 engine.targets = {}
 engine.configs = {}
 engine.steps = {}
@@ -145,7 +145,6 @@ function Init()
 	end
 
 	local projgen = ScriptArgs["projgen"]
-	print(projgen)
 	if projgen and projgen == "true" then
 		engine.projgen = true
 	end

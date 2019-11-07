@@ -15,13 +15,14 @@ function Config.warnings(self, settings)
 		settings.cc.flags:Add("-Werror")
 	elseif family == "windows" then
 		settings.cc.flags:Add("/WX") -- warnings as errors
-		settings.cc.flags:Add("/W4") -- Level 4 warning reports
+		settings.cc.flags:Add("/W3") -- Level 3 warning reports
 	end
 end
 
 function Config.Execute(self)
 	config.settings.config_name = "release"
 	config.settings.config_ext = "_r"
+	config.settings.cc.defines:Add("CONFIG_SUFFIX=\\\"_r\\\"")
 	
 	config.settings.cc.defines:Add('LOG_ENABLE')
 	config.settings.cc.defines:Add('DBG_TOOLS_ASSERT_ENABLE')
@@ -29,6 +30,7 @@ function Config.Execute(self)
 	if family == "windows" then
 		config.settings.cc.flags:Add("/MDd") -- Multithreded debug dll runtime
 		config.settings.cc.flags:Add("/Zi") -- Debug database
+		config.settings.cc.flags:Add("/EHsc") -- Exceptions TODO see if this can be removed
 		config.settings.link.flags:Add("/DEBUG")
 		config.settings.link.flags:Add("/MANIFEST")
 		config.settings.link.flags:Add("/DYNAMICBASE")

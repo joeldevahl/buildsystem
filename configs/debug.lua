@@ -20,13 +20,14 @@ function Config.warnings(self, settings)
 		settings.cc.flags:Add("-Werror")
 	elseif family == "windows" then
 		settings.cc.flags:Add("/WX") -- warnings as errors
-		settings.cc.flags:Add("/W4") -- Level 4 warning reports
+		settings.cc.flags:Add("/W3") -- Level 3 warning reports
 	end
 end
 
 function Config.Execute(self)
 	config.settings.config_name = "debug"
 	config.settings.config_ext = "_d"
+		config.settings.cc.defines:Add("CONFIG_SUFFIX=\\\"_d\\\"")
 
 	if family == "unix" then
 	  config.settings.cc.flags:Add("-g")
@@ -34,6 +35,7 @@ function Config.Execute(self)
 		config.settings.cc.defines:Add("_DEBUG")
 		config.settings.cc.flags:Add("/MDd") -- Multithreded debug dll runtime
 		config.settings.cc.flags:Add("/Z7") -- C7 compatible debug info
+		config.settings.cc.flags:Add("/EHsc") -- Exceptions TODO see if this can be removed
 		config.settings.dll.flags:Add("/DEBUG")
 		config.settings.dll.flags:Add("/MANIFEST")
 		config.settings.dll.flags:Add("/DYNAMICBASE")
